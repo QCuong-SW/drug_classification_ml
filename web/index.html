@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scikit-Learn ML Lab — Drug Classification Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js for smooth interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="light-theme">
+  <!-- App Shell -->
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="pulse-dot"></div>
+          <span class="brand-text">ML PHARMA LAB</span>
+        </div>
+        <h1 class="app-title">Drug Classification</h1>
+        <p class="app-subtitle">Scikit-learn 7-Stage Learning Hub</p>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">TRUNG TÂM ĐIỀU KHIỂN</div>
+        
+        <button class="nav-item active" data-tab="tab-overview">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Tổng quan & Dự đoán Live</span>
+          <span class="badge-pill">Hot</span>
+        </button>
+
+        <div class="nav-section-title">CÁC MÀN HÌNH TỪNG STAGE PYTHON</div>
+
+        <button class="nav-item" data-tab="tab-stage1">
+          <span class="nav-number">01</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 1: Khám phá Dữ liệu</span>
+            <span class="nav-file">stage1_understand_data.py</span>
+          </div>
+        </button>
+
+        <button class="nav-item" data-tab="tab-stage2">
+          <span class="nav-number">02</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 2: Baseline Model</span>
+            <span class="nav-file">stage2_baseline_model.py</span>
+          </div>
+        </button>
+
+        <button class="nav-item" data-tab="tab-stage3">
+          <span class="nav-number">03</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 3: Đánh giá Đa chiều</span>
+            <span class="nav-file">stage3_evaluation.py</span>
+          </div>
+        </button>
+
+        <button class="nav-item" data-tab="tab-stage4">
+          <span class="nav-number">04</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 4: So sánh 3 Mô hình</span>
+            <span class="nav-file">stage4_model_comparison.py</span>
+          </div>
+        </button>
+
+        <button class="nav-item" data-tab="tab-stage5">
+          <span class="nav-number">05</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 5: Pipeline & GridSearch</span>
+            <span class="nav-file">stage5_pipeline_workflow.py</span>
+          </div>
+        </button>
+
+        <button class="nav-item" data-tab="tab-stage6">
+          <span class="nav-number">06</span>
+          <div class="nav-text-group">
+            <span class="nav-label">Stage 6: Trực quan hóa & Báo cáo</span>
+            <span class="nav-file">stage6_visualization.py</span>
+          </div>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="server-status-card">
+          <div class="status-indicator">
+            <span class="indicator-glow online"></span>
+            <span class="status-text" id="status-label">Backend Đang Chạy</span>
+          </div>
+          <div class="status-meta">FastAPI • Scikit-Learn 1.9.1</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="breadcrumbs">
+          <span class="breadcrumb-root">Drug Classification ML</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-current" id="current-screen-title">Tổng quan & Trình giả lập Dự đoán</span>
+        </div>
+
+        <div class="topbar-actions">
+          <span class="dataset-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            drug200.csv (201 mẫu)
+          </span>
+          <a href="#quick-predict" class="btn-primary-sm" onclick="switchToTab('tab-overview'); document.getElementById('live-predictor-card').scrollIntoView({behavior: 'smooth'})">
+            ⚡ Thử Dự Đoán Ngay
+          </a>
+        </div>
+      </header>
+
+      <!-- View Containers (Tabs) -->
+      <div class="content-body">
+
+        <!-- ========================================== -->
+        <!-- TAB 0: TỔNG QUAN & DỰ ĐOÁN THỜI GIAN THỰC -->
+        <!-- ========================================== -->
+        <section id="tab-overview" class="view-tab active">
+          <!-- Banner -->
+          <div class="hero-banner">
+            <div class="hero-content">
+              <span class="hero-badge">Hệ Thống Phân Loại Thuốc Tự Động</span>
+              <h2>Scikit-learn Multiclass Classification Hub</h2>
+              <p>Trực quan hóa toàn diện hành trình học máy có giám sát từ Khám phá dữ liệu, Xây dựng Baseline, Đánh giá đa chiều, So sánh mô hình đến Pipeline chống Data Leakage chuẩn Production.</p>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat-box">
+                <span class="stat-number">201</span>
+                <span class="stat-caption">Bệnh nhân</span>
+              </div>
+              <div class="hero-stat-box">
+                <span class="stat-number">5</span>
+                <span class="stat-caption">Đặc trưng y khoa</span>
+              </div>
+              <div class="hero-stat-box highlight">
+                <span class="stat-number">97.5%</span>
+                <span class="stat-caption">Độ chính xác Test</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Cards to 6 Stages -->
+          <div class="section-title-wrapper">
+            <h3>Lộ Trình Học Máy 6 Giai Đoạn</h3>
+            <span class="section-sub">Bấm vào từng màn hình để xem phân tích chi tiết và chạy file Python tương ứng</span>
+          </div>
+
+          <div class="stages-grid">
+            <div class="stage-card" onclick="switchToTab('tab-stage1')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 1</span>
+                <span class="stage-icon">🔍</span>
+              </div>
+              <h4>Khám phá Dữ liệu</h4>
+              <p>Kiểm tra shape, thiếu giá trị (missing), trùng lặp, thống kê mô tả và phân tích mất cân bằng nhãn mục tiêu.</p>
+              <div class="stage-card-footer">
+                <code>stage1_understand_data.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+
+            <div class="stage-card" onclick="switchToTab('tab-stage2')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 2</span>
+                <span class="stage-icon">⚙️</span>
+              </div>
+              <h4>Mô hình Baseline</h4>
+              <p>Chia tập dữ liệu Stratified (80/20), tiền xử lý StandardScaler + OneHotEncoder và huấn luyện Logistic Regression.</p>
+              <div class="stage-card-footer">
+                <code>stage2_baseline_model.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+
+            <div class="stage-card" onclick="switchToTab('tab-stage3')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 3</span>
+                <span class="stage-icon">🎯</span>
+              </div>
+              <h4>Đánh giá Đa chiều</h4>
+              <p>Confusion Matrix, phân tích Macro vs Weighted F1-score và mổ xẻ nguyên nhân các ca đoán sai (Error Analysis).</p>
+              <div class="stage-card-footer">
+                <code>stage3_evaluation.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+
+            <div class="stage-card" onclick="switchToTab('tab-stage4')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 4</span>
+                <span class="stage-icon">⚖️</span>
+              </div>
+              <h4>So sánh 3 Mô hình</h4>
+              <p>Đối chiếu Logistic Regression, Decision Tree và Random Forest qua 5-Fold Stratified Cross-Validation.</p>
+              <div class="stage-card-footer">
+                <code>stage4_model_comparison.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+
+            <div class="stage-card" onclick="switchToTab('tab-stage5')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 5</span>
+                <span class="stage-icon">🚀</span>
+              </div>
+              <h4>Pipeline Chuẩn & GridSearch</h4>
+              <p>Đóng gói ColumnTransformer + Pipeline, tối ưu siêu tham số và chống Data Leakage tuyệt đối.</p>
+              <div class="stage-card-footer">
+                <code>stage5_pipeline_workflow.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+
+            <div class="stage-card" onclick="switchToTab('tab-stage6')">
+              <div class="stage-card-header">
+                <span class="stage-tag">Giai đoạn 6</span>
+                <span class="stage-icon">📈</span>
+              </div>
+              <h4>Trực quan hóa & Báo cáo</h4>
+              <p>Xem toàn bộ biểu đồ xuất từ Matplotlib: Phân phối, tương quan đặc trưng, confusion matrix và decision regions 2D.</p>
+              <div class="stage-card-footer">
+                <code>stage6_visualization.py</code>
+                <span class="arrow-link">→</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Live Predictor -->
+          <div class="card predictor-card" id="live-predictor-card">
+            <div class="card-header">
+              <div class="header-left">
+                <span class="badge-primary">Interactive Workbench</span>
+                <h3>Trình Giả Lập Dự Đoán Lâm Sàng Thời Gian Thực</h3>
+                <p>Điều chỉnh các thông số sinh hiệu của bệnh nhân để mô hình Machine Learning suy luận ngay lập tức.</p>
+              </div>
+              <div class="model-select-wrapper">
+                <label for="predict-model-select">Chọn mô hình dự đoán:</label>
+                <select id="predict-model-select" class="form-select">
+                  <option value="pipeline_rf" selected>Random Forest + Pipeline (Khuyên dùng - 97.5%)</option>
+                  <option value="dt">Decision Tree (Cây quyết định)</option>
+                  <option value="lr">Logistic Regression (Baseline)</option>
+                  <option value="rf">Random Forest (Thủ công)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="predictor-body">
+              <!-- Inputs Form -->
+              <div class="predictor-controls">
+                
+                <!-- Age Input -->
+                <div class="control-group">
+                  <div class="control-label-row">
+                    <label for="range-age">Tuổi bệnh nhân (Age):</label>
+                    <span class="value-badge" id="val-age">45 tuổi</span>
+                  </div>
+                  <input type="range" id="range-age" min="15" max="74" value="45" class="custom-range">
+                  <div class="range-marks"><span>15 tuổi</span><span>45</span><span>74 tuổi</span></div>
+                </div>
+
+                <!-- Na_to_K Input -->
+                <div class="control-group">
+                  <div class="control-label-row">
+                    <label for="range-natok">Tỷ lệ Natri / Kali trong máu (Na_to_K):</label>
+                    <span class="value-badge highlight-badge" id="val-natok">15.5</span>
+                  </div>
+                  <input type="range" id="range-natok" min="6.0" max="38.5" step="0.1" value="15.5" class="custom-range">
+                  <div class="range-marks"><span>6.0 (Thấp)</span><span class="critical-threshold">Ngưỡng 15.0</span><span>38.5 (Rất cao)</span></div>
+                </div>
+
+                <!-- Categoricals Row -->
+                <div class="categorical-row">
+                  
+                  <!-- Sex -->
+                  <div class="control-group half">
+                    <label>Giới tính (Sex):</label>
+                    <div class="radio-pill-group">
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-sex" value="F" checked>
+                        <span>Nữ (F)</span>
+                      </label>
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-sex" value="M">
+                        <span>Nam (M)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Blood Pressure -->
+                  <div class="control-group half">
+                    <label>Huyết áp (Blood Pressure - BP):</label>
+                    <div class="radio-pill-group">
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-bp" value="HIGH" checked>
+                        <span>Cao (HIGH)</span>
+                      </label>
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-bp" value="NORMAL">
+                        <span>Bình thường</span>
+                      </label>
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-bp" value="LOW">
+                        <span>Thấp (LOW)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Cholesterol -->
+                  <div class="control-group half">
+                    <label>Mức Cholesterol:</label>
+                    <div class="radio-pill-group">
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-chol" value="HIGH" checked>
+                        <span>Cao (HIGH)</span>
+                      </label>
+                      <label class="radio-pill">
+                        <input type="radio" name="pred-chol" value="NORMAL">
+                        <span>Bình thường</span>
+                      </label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="predictor-actions">
+                  <button class="btn-primary" id="btn-run-prediction">
+                    <span class="btn-icon">⚡</span>
+                    Chạy Phân Tích & Dự Đoán
+                  </button>
+                  <button class="btn-secondary" id="btn-preset-case138">
+                    Nạp ca khó (Bệnh nhân #138)
+                  </button>
+                  <button class="btn-secondary" id="btn-preset-drugy">
+                    Nạp ca Na/K cao (>15)
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Prediction Results Display -->
+              <div class="predictor-results-panel">
+                <div class="result-box-top">
+                  <span class="result-caption">Kết quả Phân loại Đề xuất:</span>
+                  <div class="predicted-drug-hero" id="result-drug-badge">
+                    <span class="drug-name-big" id="result-drug-name">DrugY</span>
+                    <span class="drug-confidence" id="result-confidence">Độ tin cậy: 98.5%</span>
+                  </div>
+                </div>
+
+                <div class="clinical-explanation-box">
+                  <div class="explanation-title">
+                    <span class="info-icon">💡</span>
+                    Lý Giải Quyết Định Lâm Sàng Của Mô Hình:
+                  </div>
+                  <p class="explanation-text" id="result-explanation">
+                    Đang tải phân tích quy luật...
+                  </p>
+                </div>
+
+                <div class="probability-breakdown-section">
+                  <span class="breakdown-title">Phân phối xác suất giữa 5 nhóm thuốc (predict_proba):</span>
+                  <div class="prob-bars-list" id="result-prob-bars">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: STAGE 1 - KHÁM PHÁ DỮ LIỆU -->
+        <!-- ========================================== -->
+        <section id="tab-stage1" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 01</span>
+              <h2>Khám phá và Thấu hiểu Dữ liệu (Understand the Data)</h2>
+              <p>Mục tiêu: Đọc dữ liệu, kiểm tra cấu trúc, phát hiện missing/duplicates, phân loại biến số và biến định tính, phát hiện mất cân bằng lớp.</p>
+              <div class="source-file-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                src/stage1_understand_data.py
+              </div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(1)">
+                <span class="play-icon">▶</span> Chạy File Python Trực Tiếp
+              </button>
+            </div>
+          </div>
+
+          <!-- Metrics Row -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span class="metric-icon">📄</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st1-rows">201</span>
+                <span class="metric-lbl">Tổng số dòng quan sát (Rows)</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">📋</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st1-cols">6</span>
+                <span class="metric-lbl">Số thuộc tính (Columns)</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">✅</span>
+              <div class="metric-info">
+                <span class="metric-val text-success" id="st1-missing">0 (0.0%)</span>
+                <span class="metric-lbl">Dữ liệu khuyết thiếu (Null)</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">⚠️</span>
+              <div class="metric-info">
+                <span class="metric-val text-warning" id="st1-duplicates">1 dòng</span>
+                <span class="metric-lbl">Dòng trùng lặp (Duplicate)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Types & Distribution Row -->
+          <div class="two-col-grid">
+            
+            <!-- Feature Types Card -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Phân Loại Các Cột (Feature Types)</h3>
+              </div>
+              <div class="card-body">
+                <div class="feature-classification-box">
+                  <div class="feat-type-group">
+                    <span class="feat-badge num-badge">Numerical (Số học)</span>
+                    <ul class="feat-list">
+                      <li><code>Age</code> — Tuổi của bệnh nhân (15 - 74)</li>
+                      <li><code>Na_to_K</code> — Tỷ lệ ion Natri trên Kali trong máu (6.27 - 38.25)</li>
+                    </ul>
+                  </div>
+
+                  <div class="feat-type-group">
+                    <span class="feat-badge cat-badge">Categorical (Phân loại)</span>
+                    <ul class="feat-list">
+                      <li><code>Sex</code> — Giới tính: <code>F</code> (Nữ), <code>M</code> (Nam)</li>
+                      <li><code>BP</code> — Huyết áp: <code>HIGH</code>, <code>NORMAL</code>, <code>LOW</code></li>
+                      <li><code>Cholesterol</code> — Nồng độ cholesterol: <code>HIGH</code>, <code>NORMAL</code></li>
+                    </ul>
+                  </div>
+
+                  <div class="feat-type-group">
+                    <span class="feat-badge target-badge">Target Label (Nhãn mục tiêu)</span>
+                    <ul class="feat-list">
+                      <li><code>Drug</code> — 5 lớp thuốc: <code>drugY</code>, <code>drugX</code>, <code>drugA</code>, <code>drugB</code>, <code>drugC</code></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="numerical-stats-table-wrapper">
+                  <h4>Thống Kê Mô Tả Biến Số:</h4>
+                  <table class="data-table-compact" id="st1-num-table">
+                    <thead>
+                      <tr><th>Thuộc tính</th><th>Count</th><th>Mean</th><th>Std</th><th>Min</th><th>50% (Median)</th><th>Max</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><strong>Age</strong></td><td>201</td><td>44.21</td><td>16.57</td><td>15.00</td><td>45.00</td><td>74.00</td></tr>
+                      <tr><td><strong>Na_to_K</strong></td><td>201</td><td>16.13</td><td>7.24</td><td>6.27</td><td>13.94</td><td>38.25</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Target Class Distribution -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Phân Phối Nhãn Mục Tiêu (Target Distribution)</h3>
+                <span class="badge-warning">Mất cân bằng lớp</span>
+              </div>
+              <div class="card-body">
+                <p class="card-lead">drugY chiếm tới 45.77% tổng số dữ liệu, trong khi drugB và drugC chỉ chiếm ~8%. Cần dùng Stratified Split để tránh lệch tập kiểm tra!</p>
+                <div class="chart-container" style="height: 240px;">
+                  <canvas id="chart-target-dist"></canvas>
+                </div>
+                <div class="target-distribution-list" id="st1-target-bars">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Raw Dataset Browser -->
+          <div class="card">
+            <div class="card-header">
+              <div class="header-left">
+                <h3>Bảng Dữ Liệu Gốc (drug200.csv)</h3>
+                <p>Xem toàn bộ các bản ghi, tìm kiếm và lọc theo loại thuốc.</p>
+              </div>
+              <div class="table-search-box">
+                <input type="text" id="dataset-search" placeholder="Tìm theo tuổi, thuốc, BP..." class="search-input">
+              </div>
+            </div>
+            <div class="card-body no-padding">
+              <div class="table-responsive">
+                <table class="data-table" id="raw-dataset-table">
+                  <thead>
+                    <tr>
+                      <th>#ID</th>
+                      <th>Tuổi (Age)</th>
+                      <th>Giới tính (Sex)</th>
+                      <th>Huyết áp (BP)</th>
+                      <th>Cholesterol</th>
+                      <th>Tỷ lệ Na/K</th>
+                      <th>Thuốc Chỉ Định (Drug)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="raw-dataset-tbody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-pagination">
+                <span id="page-info">Hiển thị 1 - 15 trong 201 bản ghi</span>
+                <div class="pagination-buttons">
+                  <button class="btn-page" id="btn-prev-page" disabled>Trang trước</button>
+                  <button class="btn-page" id="btn-next-page">Trang sau</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage1" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage1_understand_data.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(1)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-1"></pre>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: STAGE 2 - BASELINE MODEL -->
+        <!-- ========================================== -->
+        <section id="tab-stage2" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 02</span>
+              <h2>Xây dựng Mô hình Cơ sở (Build a Baseline Model)</h2>
+              <p>Mục tiêu: Chia Train/Test phân tầng (stratify=y), tiền xử lý StandardScaler & OneHotEncoder, huấn luyện Logistic Regression, giải mã cơ chế fit, predict, predict_proba.</p>
+              <div class="source-file-badge">src/stage2_baseline_model.py</div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(2)">
+                <span class="play-icon">▶</span> Chạy File Python Trực Tiếp
+              </button>
+            </div>
+          </div>
+
+          <!-- Split & Preprocessing Cards -->
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Chia Tập Train / Test Phân Tầng (Stratified Split)</h3>
+              </div>
+              <div class="card-body">
+                <div class="split-stats-bar">
+                  <div class="split-segment train" style="width: 80%;">
+                    <span>Train: 160 mẫu (80%)</span>
+                  </div>
+                  <div class="split-segment test" style="width: 20%;">
+                    <span>Test: 41 mẫu (20%)</span>
+                  </div>
+                </div>
+
+                <div class="stratified-note">
+                  <strong>Tại sao phải dùng stratify=y?</strong>
+                  <p>Nếu chia ngẫu nhiên thông thường (không stratify), các lớp thiểu số như drugB (chỉ có 16 mẫu) có thể bị dồn hết vào Train hoặc rơi quá ít vào Test, làm sai lệch kết quả thi!</p>
+                </div>
+
+                <table class="data-table-compact" id="st2-stratified-table">
+                  <thead>
+                    <tr><th>Lớp Thuốc</th><th>Tỷ lệ Train (%)</th><th>Tỷ lệ Test (%)</th><th>Độ lệch</th></tr>
+                  </thead>
+                  <tbody>
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Tiền Xử Lý (Preprocessing) Chống Data Leakage</h3>
+              </div>
+              <div class="card-body">
+                <div class="pipeline-explainer">
+                  <div class="step-card">
+                    <span class="step-num">1</span>
+                    <div class="step-text">
+                      <strong>StandardScaler (Biến số: Age, Na_to_K)</strong>
+                      <p>Đưa về phân phối chuẩn có <code>mean = 0</code>, <code>std = 1</code>. Nguyên tắc vàng: <em>Chỉ fit trên X_train!</em></p>
+                    </div>
+                  </div>
+                  <div class="step-card">
+                    <span class="step-num">2</span>
+                    <div class="step-text">
+                      <strong>OneHotEncoder (Biến chữ: Sex, BP, Cholesterol)</strong>
+                      <p>Mã hóa 3 cột phân loại thành <strong>7 cột nhị phân (0 hoặc 1)</strong>. Tổng số đặc trưng đầu vào sau biến đổi: <strong>9 đặc trưng</strong>.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="encoded-tags-wrap">
+                  <span class="tags-title">9 đặc trưng sau mã hóa:</span>
+                  <div class="encoded-badges" id="st2-encoded-features">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 Methods Explainer -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Ba Phương Thức Then Chốt Của Scikit-learn Classifier</h3>
+            </div>
+            <div class="card-body">
+              <div class="three-methods-grid">
+                <div class="method-card">
+                  <div class="method-header">
+                    <code class="method-code">model.fit(X_train, y_train)</code>
+                  </div>
+                  <p>Học các trọng số liên kết (weights & biases) từ dữ liệu đã qua tiền xử lý và nhãn thực tế. Đây là lúc máy thực sự "học".</p>
+                </div>
+                <div class="method-card">
+                  <div class="method-header">
+                    <code class="method-code">model.predict(X_test)</code>
+                  </div>
+                  <p>Đưa ra nhãn lớp cụ thể có xác suất cao nhất (Argmax) cho từng bệnh nhân kiểm tra.</p>
+                </div>
+                <div class="method-card">
+                  <div class="method-header">
+                    <code class="method-code">model.predict_proba(X_test)</code>
+                  </div>
+                  <p>Trả về ma trận phân phối xác suất (%) giữa cả 5 loại thuốc, giúp bác sĩ đo lường mức độ chắc chắn của AI.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Set Predictions Viewer -->
+          <div class="card">
+            <div class="card-header">
+              <div class="header-left">
+                <h3>Soi Chi Tiết Dự Đoán Trên Toàn Bộ Tập Test (41 Bệnh Nhân)</h3>
+                <p>Đối chiếu kết quả thực tế, nhãn dự đoán và xác suất chi tiết của mô hình Baseline.</p>
+              </div>
+              <div class="header-right">
+                <span class="metric-badge-big">Độ chính xác Baseline: <strong id="st2-accuracy">95.12%</strong></span>
+              </div>
+            </div>
+            <div class="card-body no-padding">
+              <div class="table-responsive">
+                <table class="data-table" id="st2-test-table">
+                  <thead>
+                    <tr>
+                      <th>Mẫu #</th>
+                      <th>Hồ sơ Bệnh nhân</th>
+                      <th>Thuốc Thực tế</th>
+                      <th>Mô hình Đoán</th>
+                      <th>Kết quả</th>
+                      <th>Phân Bổ Xác Suất (predict_proba)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="st2-test-tbody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage2" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage2_baseline_model.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(2)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-2"></pre>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: STAGE 3 - ĐÁNH GIÁ ĐA CHIỀU -->
+        <!-- ========================================== -->
+        <section id="tab-stage3" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 03</span>
+              <h2>Đánh giá Đa chiều và Mổ xẻ Mô hình (Model Evaluation)</h2>
+              <p>Mục tiêu: Đánh giá Accuracy, Precision, Recall, Macro vs Weighted F1-score; trực quan hóa Ma trận nhầm lẫn (Confusion Matrix) và phân tích nguyên nhân sai số (Error Analysis).</p>
+              <div class="source-file-badge">src/stage3_evaluation.py</div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(3)">
+                <span class="play-icon">▶</span> Chạy File Python Trực Tiếp
+              </button>
+            </div>
+          </div>
+
+          <!-- Overall Metrics Cards -->
+          <div class="metrics-grid five-cols">
+            <div class="metric-card">
+              <span class="metric-icon">🎯</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st3-acc">95.12%</span>
+                <span class="metric-lbl">Accuracy (Độ chính xác)</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">🔍</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st3-macro-prec">94.40%</span>
+                <span class="metric-lbl">Macro Precision</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">📡</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st3-macro-rec">92.50%</span>
+                <span class="metric-lbl">Macro Recall</span>
+              </div>
+            </div>
+            <div class="metric-card highlight">
+              <span class="metric-icon">⚖️</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st3-macro-f1">93.39%</span>
+                <span class="metric-lbl">Macro F1-Score</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-icon">📊</span>
+              <div class="metric-info">
+                <span class="metric-val" id="st3-weighted-f1">95.05%</span>
+                <span class="metric-lbl">Weighted F1-Score</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Educational Callout: Macro vs Weighted -->
+          <div class="card callout-card">
+            <div class="callout-icon">💡</div>
+            <div class="callout-content">
+              <h4>Bài học cốt lõi: Tại sao Accuracy 95% có thể là "cú lừa"?</h4>
+              <p><strong>Weighted Average:</strong> Bị chi phối nặng bởi nhóm chiếm đa số (<code>drugY</code> có 19 mẫu trong test). Nếu mô hình chỉ đoán tốt nhóm lớn, điểm Weighted F1 và Accuracy vẫn sẽ rất cao.</p>
+              <p><strong>Macro Average:</strong> Coi cả 5 loại thuốc quan trọng <em>bình đẳng như nhau</em>. Nếu mô hình đoán sai hoàn toàn một nhóm thiểu số (như <code>drugB</code>), Macro Recall sẽ sụt giảm mạnh, giúp phát hiện ngay lỗ hổng của mô hình!</p>
+            </div>
+          </div>
+
+          <!-- Confusion Matrix & Classification Report -->
+          <div class="two-col-grid">
+            
+            <!-- Confusion Matrix Heatmap -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Ma Trận Nhầm Lẫn (Confusion Matrix Heatmap)</h3>
+                <span class="badge-neutral">Hàng: Thực tế | Cột: Dự đoán</span>
+              </div>
+              <div class="card-body">
+                <div class="confusion-matrix-wrapper">
+                  <table class="cm-table" id="cm-table">
+                    <!-- Populated by JS -->
+                  </table>
+                </div>
+                <div class="cm-legend">
+                  <span class="cm-legend-item"><span class="cm-swatch correct"></span> Đường chéo: Dự đoán ĐÚNG</span>
+                  <span class="cm-legend-item"><span class="cm-swatch incorrect"></span> Ngoài đường chéo: Bị nhầm lẫn (Sai)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detailed Classification Report -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Báo Cáo Phân Loại Chi Tiết (Classification Report)</h3>
+              </div>
+              <div class="card-body no-padding">
+                <table class="data-table" id="classification-report-table">
+                  <thead>
+                    <tr>
+                      <th>Lớp Thuốc</th>
+                      <th>Precision (%)</th>
+                      <th>Recall (%)</th>
+                      <th>F1-Score (%)</th>
+                      <th>Số mẫu (Support)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="classification-report-tbody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Error Analysis Deep Dive -->
+          <div class="card">
+            <div class="card-header">
+              <div class="header-left">
+                <h3>Truy Vết Mẫu Đoán Sai (Error Analysis Deep Dive)</h3>
+                <p>Khám phá lý do tại sao Logistic Regression bị đoán nhầm ở các ca đặc biệt.</p>
+              </div>
+              <span class="badge-danger" id="st3-error-count">2 ca đoán sai / 41 mẫu</span>
+            </div>
+            <div class="card-body" id="st3-errors-container">
+              <!-- Populated by JS with Patient details -->
+            </div>
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage3" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage3_evaluation.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(3)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-3"></pre>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: STAGE 4 - SO SÁNH MÔ HÌNH -->
+        <!-- ========================================== -->
+        <section id="tab-stage4" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 04</span>
+              <h2>So sánh và Biện luận Mô hình (Model Comparison)</h2>
+              <p>Mục tiêu: Đọ sức 3 thuật toán: Logistic Regression (Tuyến tính), Decision Tree (Cây quyết định), Random Forest (Rừng ngẫu nhiên); áp dụng 5-Fold Stratified CV và phân tích Overfitting.</p>
+              <div class="source-file-badge">src/stage4_model_comparison.py</div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(4)">
+                <span class="play-icon">▶</span> Chạy File Python Trực Tiếp
+              </button>
+            </div>
+          </div>
+
+          <!-- Benchmark Comparison Table -->
+          <div class="card">
+            <div class="card-header">
+              <div class="header-left">
+                <h3>Bảng Đọ Sức Hiệu Năng (Model Benchmark Table)</h3>
+                <p>Dữ liệu đo lường trực tiếp từ 5-Fold Stratified CV trên tập Train và kiểm tra trên Test set độc lập.</p>
+              </div>
+            </div>
+            <div class="card-body no-padding">
+              <table class="data-table" id="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>Mô hình (Model)</th>
+                    <th>Train Accuracy</th>
+                    <th>5-Fold CV Accuracy (Train)</th>
+                    <th>5-Fold CV F1-Macro (Train)</th>
+                    <th>Test Accuracy (Độc lập)</th>
+                    <th>Test F1-Macro (Độc lập)</th>
+                    <th>Hiện tượng Overfitting</th>
+                  </tr>
+                </thead>
+                <tbody id="benchmark-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Comparison Charts -->
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>Biểu Đồ So Sánh Điểm Test F1-Macro & CV Accuracy</h3>
+              </div>
+              <div class="card-body">
+                <div class="chart-container" style="height: 280px;">
+                  <canvas id="chart-model-comparison"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Tại Sao Cây Quyết Định (Tree Models) Thắng Tuyệt Đối?</h3>
+              </div>
+              <div class="card-body">
+                <div class="comparison-insight-box">
+                  <div class="insight-point">
+                    <span class="point-badge">1</span>
+                    <div>
+                      <strong>Bản chất bài toán tuân theo các quy tắc ngưỡng (Rule-based):</strong>
+                      <p>Dữ liệu này có các ranh giới cắt rất rõ ràng: <code>Na_to_K > 15</code> thì dùng <code>drugY</code>, <code>BP == HIGH</code> và <code>Age > 50</code> thì dùng <code>drugB</code>.</p>
+                    </div>
+                  </div>
+                  <div class="insight-point">
+                    <span class="point-badge">2</span>
+                    <div>
+                      <strong>Nhát cắt vuông góc (Orthogonal Splits):</strong>
+                      <p>Decision Tree tạo ra các mặt cắt vuông góc với từng trục đặc trưng, khớp 100% với logic y khoa này. Ngược lại, Logistic Regression phải tìm siêu phẳng tuyến tính nghiêng, dễ bị lỗi ở các góc giao thoa!</p>
+                    </div>
+                  </div>
+                  <div class="insight-point">
+                    <span class="point-badge">3</span>
+                    <div>
+                      <strong>Cảnh báo Overfitting (Học vẹt):</strong>
+                      <p>Decision Tree đạt Train Acc = 100%. Nếu không giới hạn độ sâu (max_depth), cây sẽ ghi nhớ từng điểm nhiễu. Đó là lý do <strong>Random Forest</strong> là sự nâng cấp hoàn hảo nhờ kỹ thuật Ensemble Bagging.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage4" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage4_model_comparison.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(4)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-4"></pre>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: STAGE 5 - PIPELINE WORKFLOW -->
+        <!-- ========================================== -->
+        <section id="tab-stage5" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 05</span>
+              <h2>Quy trình Chuẩn Chuyên nghiệp với Pipeline (Production Pipeline)</h2>
+              <p>Mục tiêu: Đóng gói ColumnTransformer & Pipeline, chống Data Leakage tuyệt đối trong Cross-Validation, tìm kiếm siêu tham số tối ưu bằng GridSearchCV.</p>
+              <div class="source-file-badge">src/stage5_pipeline_workflow.py</div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(5)">
+                <span class="play-icon">▶</span> Chạy File Python Trực Tiếp
+              </button>
+            </div>
+          </div>
+
+          <!-- Pipeline Architecture Diagram -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Kiến Trúc Pipeline Khép Kín (End-to-End Pipeline)</h3>
+              <span class="badge-success">Chống Rò Rỉ Dữ Liệu (Zero Data Leakage)</span>
+            </div>
+            <div class="card-body">
+              <div class="pipeline-flow-diagram">
+                
+                <div class="pipe-node raw-input">
+                  <div class="node-icon">📥</div>
+                  <div class="node-content">
+                    <span class="node-title">Raw Patient DataFrame</span>
+                    <span class="node-desc">Age, Sex, BP, Cholesterol, Na_to_K</span>
+                  </div>
+                </div>
+
+                <div class="pipe-connector">→</div>
+
+                <div class="pipe-node transformer-box">
+                  <div class="transformer-header">ColumnTransformer</div>
+                  <div class="transformer-branches">
+                    <div class="branch">
+                      <span class="branch-tag">StandardScaler</span>
+                      <span>['Age', 'Na_to_K']</span>
+                    </div>
+                    <div class="branch">
+                      <span class="branch-tag">OneHotEncoder</span>
+                      <span>['Sex', 'BP', 'Cholesterol']</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pipe-connector">→</div>
+
+                <div class="pipe-node classifier-box">
+                  <div class="node-icon">🌲</div>
+                  <div class="node-content">
+                    <span class="node-title">RandomForestClassifier</span>
+                    <span class="node-desc">GridSearchCV Tuned (n_estimators=100, max_depth=5)</span>
+                  </div>
+                </div>
+
+                <div class="pipe-connector">→</div>
+
+                <div class="pipe-node output-box">
+                  <div class="node-icon">💊</div>
+                  <div class="node-content">
+                    <span class="node-title">Dự Đoán Thuốc</span>
+                    <span class="node-desc">DrugY / DrugX / DrugA / DrugB / DrugC</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- GridSearchCV Configuration & Results -->
+          <div class="two-col-grid">
+            
+            <div class="card">
+              <div class="card-header">
+                <h3>Không Gian Tìm Kiếm Siêu Tham Số (GridSearchCV)</h3>
+              </div>
+              <div class="card-body">
+                <table class="data-table-compact">
+                  <thead>
+                    <tr><th>Tham số tinh chỉnh</th><th>Không gian giá trị tìm kiếm</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>classifier__n_estimators</code></td><td><code>[50, 100]</code> (Số cây quyết định)</td></tr>
+                    <tr><td><code>classifier__max_depth</code></td><td><code>[3, 5, None]</code> (Độ sâu tối đa)</td></tr>
+                    <tr><td><code>classifier__min_samples_split</code></td><td><code>[2, 5]</code> (Mẫu tối thiểu để phân nhánh)</td></tr>
+                  </tbody>
+                </table>
+                <div class="grid-stats-row">
+                  <div class="grid-stat"><strong>12</strong> Cấu hình</div>
+                  <div class="grid-stat"><strong>5</strong> Folds CV</div>
+                  <div class="grid-stat"><strong>60</strong> Lượt Huấn Luyện</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Cấu Hình Tối Ưu Tìm Được (Best Estimator)</h3>
+                <span class="badge-primary">Đã xác thực</span>
+              </div>
+              <div class="card-body">
+                <div class="best-param-cards">
+                  <div class="param-card">
+                    <span class="param-name">max_depth</span>
+                    <span class="param-value">5</span>
+                    <span class="param-sub">Giữ cây cân đối, ngừa overfit</span>
+                  </div>
+                  <div class="param-card">
+                    <span class="param-name">n_estimators</span>
+                    <span class="param-value">100</span>
+                    <span class="param-sub">Rừng 100 cây vững chắc</span>
+                  </div>
+                  <div class="param-card">
+                    <span class="param-name">min_samples_split</span>
+                    <span class="param-value">2</span>
+                    <span class="param-sub">Độ chi tiết tối ưu</span>
+                  </div>
+                </div>
+
+                <div class="cv-score-banner">
+                  <span>Điểm F1-Macro trung bình trên 5 Folds:</span>
+                  <strong class="score-number">99.17%</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage5" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage5_pipeline_workflow.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(5)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-5"></pre>
+          </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: STAGE 6 - TRỰC QUAN HÓA & BÁO CÁO -->
+        <!-- ========================================== -->
+        <section id="tab-stage6" class="view-tab">
+          <div class="stage-header-banner">
+            <div class="header-left">
+              <span class="stage-step-badge">Stage 06</span>
+              <h2>Trực quan hóa và Đúc kết Tri thức (Visualize & Communicate)</h2>
+              <p>Mục tiêu: Xuất các biểu đồ phân phối, tương quan đặc trưng, so sánh ma trận nhầm lẫn và trực quan hóa ranh giới quyết định (decision regions) trên không gian 2D.</p>
+              <div class="source-file-badge">src/stage6_visualization.py</div>
+            </div>
+            <div class="header-right">
+              <button class="btn-run-script" onclick="runStageScript(6)">
+                <span class="play-icon">▶</span> Chạy Tạo Lại Biểu Đồ (Re-generate)
+              </button>
+            </div>
+          </div>
+
+          <!-- Figure Showcase Gallery -->
+          <div class="figures-gallery">
+            
+            <!-- Figure 1 -->
+            <div class="figure-card">
+              <div class="figure-card-header">
+                <h4>Biểu đồ 1: Phân Phối Nhãn Mục Tiêu (Target Distribution)</h4>
+                <a href="/reports/figures/01_target_distribution.png" target="_blank" class="btn-view-full">Phóng to ↗</a>
+              </div>
+              <div class="figure-img-wrap" onclick="openImageModal('/reports/figures/01_target_distribution.png', 'Biểu đồ 1: Phân Phối Nhãn Mục Tiêu')">
+                <img src="/reports/figures/01_target_distribution.png" alt="Target Distribution" class="figure-img" id="fig-img-1" onerror="this.src='/static/img/placeholder.svg'">
+              </div>
+              <div class="figure-card-footer">
+                <p>Số lượng và tỷ lệ % của 5 nhóm thuốc. Thể hiện rõ sự áp đảo của nhóm <code>drugY</code> (~45.8%) và nhóm thiểu số <code>drugB</code> / <code>drugC</code> (~8%).</p>
+              </div>
+            </div>
+
+            <!-- Figure 2 -->
+            <div class="figure-card">
+              <div class="figure-card-header">
+                <h4>Biểu đồ 2: Quan Hệ Tuổi (Age) vs Tỷ Lệ Na/K</h4>
+                <a href="/reports/figures/02_feature_relationships.png" target="_blank" class="btn-view-full">Phóng to ↗</a>
+              </div>
+              <div class="figure-img-wrap" onclick="openImageModal('/reports/figures/02_feature_relationships.png', 'Biểu đồ 2: Quan Hệ Tuổi vs Tỷ Lệ Na/K')">
+                <img src="/reports/figures/02_feature_relationships.png" alt="Feature Relationships" class="figure-img" id="fig-img-2" onerror="this.src='/static/img/placeholder.svg'">
+              </div>
+              <div class="figure-card-footer">
+                <p>Khẳng định ranh giới quyết định lâm sàng tại <strong>Na_to_K = 15.0</strong> (đường gạch đỏ). Tất cả bệnh nhân có Na_to_K > 15 đều thuộc nhóm <code>drugY</code>.</p>
+              </div>
+            </div>
+
+            <!-- Figure 3 -->
+            <div class="figure-card">
+              <div class="figure-card-header">
+                <h4>Biểu đồ 3: So Sánh Ma Trận Nhầm Lẫn (LR vs RF)</h4>
+                <a href="/reports/figures/03_confusion_matrices.png" target="_blank" class="btn-view-full">Phóng to ↗</a>
+              </div>
+              <div class="figure-img-wrap" onclick="openImageModal('/reports/figures/03_confusion_matrices.png', 'Biểu đồ 3: So Sánh Ma Trận Nhầm Lẫn')">
+                <img src="/reports/figures/03_confusion_matrices.png" alt="Confusion Matrices" class="figure-img" id="fig-img-3" onerror="this.src='/static/img/placeholder.svg'">
+              </div>
+              <div class="figure-card-footer">
+                <p>Đối chiếu ma trận nhầm lẫn giữa Logistic Regression (Baseline) và Random Forest (Tối ưu). Random Forest khắc phục triệt để các ca nhầm lẫn.</p>
+              </div>
+            </div>
+
+            <!-- Figure 4 -->
+            <div class="figure-card">
+              <div class="figure-card-header">
+                <h4>Biểu đồ 4: Ranh Giới Quyết Định 2D (Decision Regions)</h4>
+                <a href="/reports/figures/04_decision_boundary_2d.png" target="_blank" class="btn-view-full">Phóng to ↗</a>
+              </div>
+              <div class="figure-img-wrap" onclick="openImageModal('/reports/figures/04_decision_boundary_2d.png', 'Biểu đồ 4: Ranh Giới Quyết Định 2D')">
+                <img src="/reports/figures/04_decision_boundary_2d.png" alt="2D Decision Regions" class="figure-img" id="fig-img-4" onerror="this.src='/static/img/placeholder.svg'">
+              </div>
+              <div class="figure-card-footer">
+                <p>Đối chiếu giữa ranh giới phẳng liên tục của Logistic Regression và các nhát cắt vuông góc phân vùng của Cây Quyết Định trên mặt phẳng Age vs Na_to_K.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 2D Limitation Deep Dive -->
+          <div class="card callout-card">
+            <div class="callout-icon">🌐</div>
+            <div class="callout-content">
+              <h4>Tại sao không thể đánh giá mô hình phân loại chỉ qua mắt nhìn 2D?</h4>
+              <p>Trong không gian 2D (chỉ có Age và Na_to_K), các điểm bệnh nhân drugA, drugB, drugC trông có vẻ chồng chéo lên nhau. Tuy nhiên, trong không gian 5 chiều thực tế của Scikit-learn, chúng được <strong>phân tách rạch ròi 100%</strong> nhờ các đặc trưng Huyết áp (HIGH / NORMAL / LOW) và Cholesterol (HIGH / NORMAL)!</p>
+            </div>
+          </div>
+
+          <!-- Embedded Terminal Console -->
+          <div class="card terminal-card" id="terminal-stage6" style="display:none;">
+            <div class="terminal-header">
+              <span class="terminal-title">Console Output: stage6_visualization.py</span>
+              <button class="btn-close-terminal" onclick="closeTerminal(6)">Đóng</button>
+            </div>
+            <pre class="terminal-body" id="terminal-output-6"></pre>
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div class="modal-overlay" id="img-modal" onclick="closeImageModal()">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-img-title">Xem biểu đồ</h3>
+        <button class="btn-close-modal" onclick="closeImageModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <img id="modal-img-element" src="" alt="Full view figure" class="modal-image">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main JavaScript Application -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

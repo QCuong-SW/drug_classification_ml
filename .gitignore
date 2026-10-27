@@ -1,25 +1,116 @@
-# Byte-compiled / optimized / DLL files
+# ==============================================================================
+# Git Ignore Configuration — Drug Classification ML & Web Lab
+# ==============================================================================
+
+# 1. Byte-compiled / Python Cache
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
-# Virtual environments
+# 2. Virtual Environments
 .venv/
 venv/
 ENV/
 env/
+venv.bak/
+env.bak/
+.conda/
 
-# Jupyter Notebook checkpoints
+# 3. Packaging & Distribution
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 4. Testing, Coverage & Linters
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# 5. Jupyter Notebooks
 .ipynb_checkpoints/
+*-checkpoint.ipynb
 
-# IDE configurations
+# 6. Environment Variables, Secrets & Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 7. IDEs & Editors
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
 
-# Operating System files
+# 8. Operating System Specific
+# Windows
 Thumbs.db
-Desktop.ini
-.DS_Store
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.stackdump
 
-# Logs & temp files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+.directory
+.fuse_hidden*
+
+# 9. Machine Learning Artifacts & Temporary Exports
+# Bỏ qua các file checkpoint lớn / file dump tạm thời (nếu có sau này)
+*.tmp
+*.temp
+*.bak
+
+# 10. Logs
 *.log
+logs/
+
+# 11. Web / Frontend UI (HTML, CSS, JS) — Giữ trọng tâm thuần Python ML
+web/
+*.html
+*.css
+*.js
+run_web.bat
+
+# 12. Đảm bảo không bỏ qua các file giữ cấu trúc thư mục
+!.gitkeep
+!.keep
