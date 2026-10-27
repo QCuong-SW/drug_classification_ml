@@ -1,0 +1,15 @@
+# ==============================================================================
+# GitHub Linguist Overrides
+# Loại bỏ HTML và các file giao diện khỏi thanh thống kê % ngôn ngữ trên GitHub
+# để repo giữ trọng tâm hiển thị 100% Python
+# ==============================================================================
+
+# Loại bỏ HTML
+*.html linguist-detectable=false
+*.htm linguist-detectable=false
+
+# Loại bỏ toàn bộ frontend web (CSS, JS) nếu có lưu trữ
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+web/** linguist-detectable=false
+web/** linguist-vendored=true
